@@ -10,8 +10,8 @@ dnl INCLUDES
 dnl ------------------------------------------------------------------
 dnl Initialization for autoconf
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.59)
-AC_INIT
+AC_PREREQ([2.69])
+AC_INIT([crfsuite], [0.12])
 AC_CONFIG_SRCDIR([frontend/main.c])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -27,19 +27,23 @@ AC_ISC_POSIX
 dnl ------------------------------------------------------------------
 dnl Initialization for automake
 dnl ------------------------------------------------------------------
-AM_INIT_AUTOMAKE(crfsuite, 0.12)
-AC_CONFIG_HEADERS(config.h)
+AM_INIT_AUTOMAKE([foreign subdir-objects])
+AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
-AM_C_PROTOTYPES
 
 
 dnl ------------------------------------------------------------------
 dnl Checks for program
 dnl ------------------------------------------------------------------
-AM_PROG_CC_C_O
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_AWK
+LT_INIT
 
 
 dnl ------------------------------------------------------------------
@@ -54,13 +58,15 @@ dnl ------------------------------------------------------------------
 dnl Checks for header files.
 dnl ------------------------------------------------------------------
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h unistd.h stdint.h)
+AC_CHECK_HEADERS([float.h limits.h malloc.h memory.h stddef.h stdint.h stdlib.h string.h wchar.h])
+AC_CHECK_HEADER_STDBOOL
 
 
 dnl ------------------------------------------------------------------
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl ------------------------------------------------------------------
 AC_C_CONST
+AC_C_INLINE
 AC_CHECK_SIZEOF
 AC_TYPE_SIZE_T
 AC_STRUCT_TM
@@ -70,8 +76,16 @@ AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(unsigned int)
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(unsigned long)
-
 AC_CHECK_TYPES([uint8_t, uint16_t, uint32_t])
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 dnl ------------------------------------------------------------------
 dnl Checks for debugging mode
@@ -121,7 +135,11 @@ dnl ------------------------------------------------------------------
 AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(strdup strerror strtol strtoul)
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([strdup strerror strtol strtoul])
+AC_CHECK_FUNCS([floor memset select sqrt strchr strstr])
+
 
 dnl Check for math library
 AC_CHECK_LIB(m, rand)
@@ -129,7 +147,7 @@ AC_CHECK_LIB(m, rand)
 AC_ARG_WITH(
 	liblbfgs,
 	[AS_HELP_STRING([--with-liblbfgs=DIR],[liblbfgs directory])],
-	[INCLUDES="${INCLUDES} -I${withval}/include"; LDFLAGS="${LDFLAGS} -L${withval}/lib"]
+	[AM_CPPFLAGS="${AM_CPPFLAGS} -I${withval}/include"; LDFLAGS="${LDFLAGS} -L${withval}/lib"]
 )
 AC_CHECK_LIB(lbfgs, lbfgs)
 
@@ -138,12 +156,19 @@ dnl Export variables
 dnl ------------------------------------------------------------------
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
-AC_SUBST(INCLUDES)
+AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(includedir)
 AC_SUBST(libdir)
 
 dnl ------------------------------------------------------------------
 dnl Output the configure results.
 dnl ------------------------------------------------------------------
-AC_CONFIG_FILES(Makefile genbinary.sh include/Makefile lib/cqdb/Makefile lib/crf/Makefile frontend/Makefile swig/Makefile swig/perl/Makefile.PL)
+AC_CONFIG_FILES([Makefile
+                 genbinary.sh
+                 include/Makefile
+                 lib/cqdb/Makefile
+                 lib/crf/Makefile
+                 frontend/Makefile
+                 swig/Makefile
+                 swig/perl/Makefile.PL])
 AC_OUTPUT
